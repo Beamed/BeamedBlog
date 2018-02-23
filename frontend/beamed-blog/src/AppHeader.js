@@ -10,6 +10,7 @@ class AppHeader extends Component {
                     <Navbar.Brand>
                         <a href="#home">Beamed Blog</a>
                     </Navbar.Brand>
+                    <Navbar.Toggle/>
                 </Navbar.Header>
                 <Navbar.Collapse>
                     <Nav>
