@@ -1,4 +1,4 @@
-/target/
+**/target/**
 **/*.rs.bk
 /.idea/
 *.iml
@@ -7,3 +7,4 @@
 .idea/deployment.xml
 .idea/webServers.xml
 **/node_modules/**
+backend/.env
