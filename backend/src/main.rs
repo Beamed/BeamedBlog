@@ -12,14 +12,19 @@ extern crate csrf;
 extern crate data_encoding;
 #[macro_use]
 extern crate diesel;
+extern crate r2d2;
+extern crate r2d2_diesel;
 extern crate dotenv;
-//auth crate to handle session handling
+#[macro_use]
+extern crate log;
+extern crate log4rs;
+extern crate crypto;
+//auth mod to handle session handling
 mod auth;
+//db mod to handle db interaction 
+mod db;
 
-use diesel::prelude::*;
-use diesel::pg::PgConnection;
 use dotenv::dotenv;
-use std::env;
 
 #[get("/")]
 fn index() -> &'static str {
@@ -27,17 +32,8 @@ fn index() -> &'static str {
 }
 
 fn main() {
-    let mut app = rocket::ignite();
-    let mut mounted_app = app.mount("/", routes![index]);
-
-    mounted_app.launch();    
-}
-
-pub fn establish_connection() -> PgConnection {
     dotenv().ok();
-
-    let database_url = env::var("DATABASE_URL")
-        .expect("DATABASE_URL must be set");
-    PgConnection::establish(&database_url)
-        .expect(&format!("Error connecting to {}", database_url))
+    let mut app = rocket::ignite().manage(db::init_pool());
+    let mut mounted_app = app.mount("/", routes![index, auth::login]);
+    mounted_app.launch();    
 }
