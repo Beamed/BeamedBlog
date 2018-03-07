@@ -5,9 +5,8 @@
 .navbar-inverse .navbar-nav > li > a {
     color: #2a9fd6;
 }
-
-@media (min-width: 768px) {
-    .navbar-right { 
-        float: none !important;
-    }
+/*Crappy default override of navbar container
+to allow using container-fluid. */
+.navbar > .container {
+    width: auto;
 }
