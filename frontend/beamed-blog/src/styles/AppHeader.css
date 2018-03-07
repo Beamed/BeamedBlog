@@ -6,3 +6,8 @@
     color: #2a9fd6;
 }
 
+@media (min-width: 768px) {
+    .navbar-right { 
+        float: none !important;
+    }
+}

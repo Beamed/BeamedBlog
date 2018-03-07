@@ -85,16 +85,17 @@ fn validate_password(login_request: &LoginRequest, conn: DbConn) -> bool {
     use diesel::prelude::*;
     use crypto::md5::Md5;
     use crypto::digest::Digest;
-    let user_rows = match users.filter(username.eq(&login_request.username)).load::<User>(&*conn) {
-        Ok(user) => user, 
-        Err(e) => return false
-    };
-    let ref user_row = {
+
+    let user_row = {
+        let mut user_rows = match users.filter(username.eq(&login_request.username)).load::<User>(&*conn) {
+            Ok(user) => user, 
+            Err(e) => return false
+        };
         if user_rows.len() != 1 {
             debug!("user_rows length unexpected value for username: {}, found: {}", login_request.username , user_rows.len());
             return false
         } else {
-            &user_rows[0]
+            user_rows.remove(0)
         }
     };
     let mut md5_hasher = Md5::new();
@@ -109,5 +110,5 @@ fn validate_password(login_request: &LoginRequest, conn: DbConn) -> bool {
     md5_hasher.input(login_request.password.as_bytes());
     md5_hasher.input(salt.as_bytes());
     let expected_pass = md5_hasher.result_str();
-    return user_row.password.eq(&expected_pass) ;
+    user_row.password.eq(&expected_pass)
 }
