@@ -8,7 +8,6 @@ class AppHeader extends Component {
     constructor(props) {
         super(props);
         this.state = {};
-        this.state.isAuthenticated = props.authentication;
     }
 
     render() {
@@ -33,7 +32,7 @@ class AppHeader extends Component {
                         <NavItem  eventKey={3} href='/about'>
                             About Me
                         </NavItem>
-                        <AuthNavItem eventKey={4} isAuthenticated={this.state.isAuthenticated} />
+                        <AuthNavItem eventKey={4} />
                     </Nav>
                 </Navbar.Collapse>
 

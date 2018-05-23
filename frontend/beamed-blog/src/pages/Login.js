@@ -1,20 +1,44 @@
 import React, { Component } from 'react';
+import {FormGroup, FormControl, ControlLabel, Button, Alert} from 'react-bootstrap'
+import LoginError from '../components/Login/LoginError'
+import Auth from "../auth/Auth"
 import '../styles/Login.css';
 
 class Login extends Component {
     constructor(props) {
         super();
+        this.props = props;
         this.state = {
             username: "",
-            password: ""
+            password: "",
+            authFailed : false,
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-        this.authenticated = this.props.authenticated;    
+        this.onAuthentication = Auth.onAuthentication;
     }
 
+
     handleSubmit(evt) {
-        //alert('form submitted with: ' + this.state.username + ":" +this.state.password);
+        var handleAuth = function(result) {
+            this.onAuthentication(result.ok);
+            if(!result.ok) {
+                handleError();
+            }
+        }.bind(this);
+        var handleError = function() {
+            this.setState({authFailed: true});
+        }.bind(this);
+        fetch("/api/login", {
+            method: "POST",
+            headers: {"Content-Type": "application/json",},
+            body : JSON.stringify({
+                username: this.state.username,
+                password: this.state.password,
+            })
+        }).then( handleAuth, 
+            handleError
+        );
         evt.preventDefault();
 
     }
@@ -25,20 +49,19 @@ class Login extends Component {
     }
 
     render () {
-        var handleSubmit = this.handleSubmit;
-        var handleChange = this.handleChange;
         return (
             <div className="col-md-8 col-md-offset-2 content" id="login">
-                <form onSubmit={handleSubmit}>
-                    <div className="form-group">
-                        <label htmlFor="username">Username</label>
-                        <input type="text" value={this.state.username} onChange={handleChange} className="form-control" name="username" id="username" placeholder="Username" />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="password">Password</label>
-                        <input type="password" className="form-control" value={this.state.password} onChange={handleChange} name="password" id="password" placeholder="Password" />
-                    </div>
-                    <button className="btn btn-primary" type="submit" >Submit</button>
+                <LoginError authFailed={this.state.authFailed}/>
+                <form onSubmit={this.handleSubmit}>
+                    <FormGroup controlId="username">
+                        <ControlLabel>Username</ControlLabel>
+                        <FormControl type="text" value={this.state.username} onChange={this.handleChange} name="username" placeholder="Username" />
+                    </FormGroup>
+                    <FormGroup controlId="password">
+                        <ControlLabel>Password</ControlLabel>
+                        <FormControl type="password" value={this.state.password} onChange={this.handleChange} name="password" placeholder="Password" />
+                    </FormGroup>
+                    <Button type="submit" bsStyle="primary">Submit</Button>
                 </form>
             </div>
         );

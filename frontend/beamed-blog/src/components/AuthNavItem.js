@@ -1,23 +1,23 @@
 import React, { Component } from 'react';
 import {Navbar, Nav, NavItem} from 'react-bootstrap';
+import Auth from '../auth/Auth';
 
 class AuthNavItem extends Component {
     constructor(props) {
         super(props);
         this.state = {};
-        this.state.isAuthenticated = props.isAuthenticated;
     }
     
     render() {
-        if(!this.state.isAuthenticated) {
+        if(!Auth.isAuthenticated) {
             return (
-            <NavItem href='/login'>
+            <NavItem href='/login' onAuthentication={Auth.onAuthentication}>
                 Login
             </NavItem>
             )
         } else {
             return (
-            <NavItem href='/logout'>
+            <NavItem href='/logout' onAuthentication={Auth.onAuthentication}>
                 Logout
             </NavItem>
             )
