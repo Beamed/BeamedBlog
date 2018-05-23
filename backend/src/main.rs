@@ -19,6 +19,7 @@ extern crate dotenv;
 extern crate log;
 extern crate log4rs;
 extern crate crypto;
+extern crate time;
 //auth mod to handle session handling
 mod auth;
 //db mod to handle db interaction 
