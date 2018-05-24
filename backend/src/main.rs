@@ -1,8 +1,3 @@
-#![feature(plugin)]
-#![plugin(rocket_codegen)]
-#[macro_use]
-extern crate rocket;
-extern crate rocket_contrib;
 #[macro_use]
 extern crate serde;
 extern crate serde_json;
@@ -20,21 +15,22 @@ extern crate log;
 extern crate log4rs;
 extern crate crypto;
 extern crate time;
+extern crate actix_web;
+use actix_web::{HttpRequest, Responder, App, server};
+
 //auth mod to handle session handling
 mod auth;
 //db mod to handle db interaction 
 mod db;
+mod controllers;
 
 use dotenv::dotenv;
 
-#[get("/")]
-fn index() -> &'static str {
-    "Hello, world!"
-}
+
 
 fn main() {
     dotenv().ok();
-    let mut app = rocket::ignite().manage(db::init_pool());
-    let mut mounted_app = app.mount("/", routes![index, auth::login]);
-    mounted_app.launch();    
+    //let mut app = rocket::ignite().manage(db::init_pool());
+    //let mut mounted_app = app.mount("/", routes![index, auth::login]);
+    //mounted_app.launch();    
 }
