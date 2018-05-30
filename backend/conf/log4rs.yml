@@ -1,8 +1,18 @@
 appenders:
   stdout:
     kind: console
+  noop:
+    kind: none
 
 root:
   level: debug
   appenders:
     - stdout
+
+loggers:
+  tokio:
+    level: warn
+    additive: false
+  tokio::reactor::background:
+    level: warn
+    additive: false
