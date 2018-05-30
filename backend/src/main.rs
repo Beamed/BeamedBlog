@@ -35,7 +35,7 @@ fn main() {
     let mut server = server::new(||
         App::new().middleware(
             actix_csrf::CsrfFilter::new().allowed_origin("https://thebeamed.com/").allowed_origin("http://localhost:8080/")
-        ).resource("/api", |r| {
+        ).resource("/api/login", |r| {
             r.method(http::Method::POST).f(controllers::login_controller::handle_login);
         }).resource("/", |r| {
             r.method(http::Method::GET).f(controllers::index)
