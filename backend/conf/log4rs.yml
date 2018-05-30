@@ -1,11 +1,10 @@
 appenders:
   stdout:
     kind: console
-  noop:
-    kind: none
+
 
 root:
-  level: debug
+  level: warn
   appenders:
     - stdout
 
