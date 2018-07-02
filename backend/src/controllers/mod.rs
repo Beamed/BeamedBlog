@@ -1,8 +1,16 @@
-pub mod login_controller;
-use actix_web::{HttpRequest, HttpResponse, http, Error};
+mod login_controller;
+mod utils;
+use ::app_state::AppState;
 
-pub fn index(req: HttpRequest) -> Result<HttpResponse, Error> {
-    Ok(HttpResponse::Ok()
-        .content_type("text/html")
-        .body("This is the API for Beamed's Blog. Since this is a RESTful API, you probably don't want to be here."))
+use ::rocket::{Rocket, ignite};
+
+#[get("/")]
+pub fn index() -> String {
+    "This is the Beamed blog API. This endpoint is probably not what you want.".to_string()
+}
+
+pub fn initialize_rocket() -> ::rocket::Rocket {
+    return ignite()
+        .mount("/api", routes![index])
+
 }

@@ -1,3 +1,6 @@
+#![feature(plugin)]
+#![plugin(rocket_codegen)]
+#![feature(decl_macro)]
 #[macro_use]
 extern crate serde;
 extern crate serde_json;
@@ -12,40 +15,34 @@ extern crate r2d2_diesel;
 extern crate dotenv;
 #[macro_use]
 extern crate log;
-extern crate log4rs;
 extern crate crypto;
 extern crate time;
-extern crate actix_web;
-use actix_web::{http, HttpRequest, Responder, App, server};
-use actix_web::middleware::csrf as actix_csrf;
+extern crate cookie;
+extern crate bcrypt;
+extern crate hyper;
+extern crate http;
+#[macro_use]
+extern crate rocket;
+use cookie::SameSite;
+use std::error::Error;
 
-//auth mod to handle session handling
-mod auth;
-//db mod to handle db interaction 
-mod db;
-mod controllers;
+//just stuff how we get important stuff (users, posts, etc.) into a datalayer for now.
+pub mod datalayer;
+pub mod models;
+pub mod controllers;
+
+pub mod app_state;
+
 
 use dotenv::dotenv;
 
-
-
 fn main() {
     dotenv().ok();
-    
-    let mut server = server::new(||
-        App::new().middleware(
-            actix_csrf::CsrfFilter::new().allowed_origin("https://thebeamed.com/").allowed_origin("http://localhost:8080/")
-        ).resource("/api/login", |r| {
-            r.method(http::Method::POST).f(controllers::login_controller::handle_login);
-        }).resource("/", |r| {
-            r.method(http::Method::GET).f(controllers::index)
-        })
-    );
-    server = server.bind("127.0.0.1:8080").expect("Could not bind to 127.0.0.1:8080");
+
+    let mut server = controllers::initialize_rocket();
     info!("Bound to port 8080. Initializing..");
-    log4rs::init_file("conf/log4rs.yml", Default::default()).expect("Unable to initialize logging");
-    server.run();
-    //let mut app = rocket::ignite().manage(db::init_pool());
-    //let mut mounted_app = app.mount("/", routes![index, auth::login]);
-    //mounted_app.launch();    
+
+    server.launch();
+
+
 }
