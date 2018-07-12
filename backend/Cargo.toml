@@ -23,3 +23,4 @@ hyper = "^0.12"
 http = "^0.1.7"
 rocket = { git = "https://github.com/SergioBenitez/Rocket" }
 rocket_codegen = { git = "https://github.com/SergioBenitez/Rocket" }
+rocket_contrib = { git = "https://github.com/SergioBenitez/Rocket" }

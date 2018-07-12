@@ -1,6 +1,7 @@
 #![feature(plugin)]
 #![plugin(rocket_codegen)]
 #![feature(decl_macro)]
+#![feature(custom_derive)]
 #[macro_use]
 extern crate serde;
 extern crate serde_json;
@@ -23,6 +24,7 @@ extern crate hyper;
 extern crate http;
 #[macro_use]
 extern crate rocket;
+extern crate rocket_contrib;
 use cookie::SameSite;
 use std::error::Error;
 
@@ -42,7 +44,9 @@ fn main() {
     let mut server = controllers::initialize_rocket();
     info!("Bound to port 8080. Initializing..");
 
-    server.launch();
+    server
+        .manage(app_state::AppState::new())
+        .launch();
 
 
 }

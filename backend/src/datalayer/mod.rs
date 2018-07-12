@@ -7,6 +7,7 @@ use std::fmt::{self, Display, Formatter};
 use self::db::DbConn;
 use diesel::dsl::Eq;
 use diesel::types::Text;
+use models::login_request::LoginRequest;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct AuthError;
@@ -27,24 +28,11 @@ impl Error for AuthError {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug)]
-pub struct LoginRequest {
-    pub username: String,
-    pub password: String,
-}
-
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct ValidatedCredentials {
-    username: String,
-    display_name: Option<String>
-}
-
 pub fn get_user_from_request(login_request: &LoginRequest, state: &AppState) ->
-                            Result<ValidatedCredentials, Box<dyn Error>> {
+                            Result<User, Box<dyn Error>> {
     let user = get_user_by_username(&login_request.username, state.get_connection()?)?;
     if validate_password(login_request, &user, state.get_connection()?) {
-        Ok(ValidatedCredentials {username: login_request.username.clone(), display_name: user.display_name})
+        Ok(user)
     } else {
         Err(Box::new(AuthError{}))
     }

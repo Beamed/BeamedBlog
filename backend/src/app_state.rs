@@ -1,8 +1,11 @@
 //it sucks we need our state to know about database
 //but c'est la vie for now.
 //maybe refactor to create a wrapper around the pool at some point
-use datalayer::db::{Pool, DbConn};
+use datalayer::db::{Pool, DbConn, init_pool};
 
+use rocket::http::Status;
+use rocket::request::{self, FromRequest};
+use rocket::{Request, State, Outcome};
 
 pub struct AppState {
     db: Pool
@@ -11,5 +14,10 @@ pub struct AppState {
 impl AppState {
     pub fn get_connection(&self) -> Result<DbConn, ::r2d2::Error> {
         self.db.get()
+    }
+    pub fn new() -> AppState {
+        AppState {
+            db: init_pool()
+        }
     }
 }
