@@ -4,6 +4,6 @@ CREATE TABLE Users (
     password VARCHAR(256) NOT NULL,
     email VARCHAR NOT NULL,
     display_name VARCHAR,
-    author BIT
+    author BOOLEAN
 );
 
