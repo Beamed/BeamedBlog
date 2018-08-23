@@ -1,5 +1,4 @@
-mod login_controller;
-mod utils;
+mod user_controller;
 use ::app_state::AppState;
 
 use ::rocket::{Rocket, ignite};
@@ -10,7 +9,9 @@ pub fn index() -> String {
 }
 
 pub fn initialize_rocket() -> ::rocket::Rocket {
-    return ignite()
-        .mount("/api", routes![index])
-
+    ignite()
+        .mount("/api", routes![index,
+                                 user_controller::login,
+                                 user_controller::register
+                                 ])
 }

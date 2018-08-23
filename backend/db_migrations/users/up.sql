@@ -3,6 +3,7 @@ CREATE TABLE Users (
     username VARCHAR NOT NULL,
     password VARCHAR(256) NOT NULL,
     email VARCHAR NOT NULL,
-    display_name VARCHAR 
+    display_name VARCHAR,
+    author BIT
 );
 

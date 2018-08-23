@@ -1,11 +1,11 @@
-use datalayer::{self};
+use datalayer::user_data_layer;
 use serde_json;
 use ::app_state::AppState;
 use rocket::State;
 use rocket::http::{Cookie, Cookies, Status, SameSite};
 use rocket_contrib::Json;
 use models::login_request::LoginRequest;
-use models::user::User;
+use models::user::{User, UserForm};
 use std::fmt::Display;
 use std::fmt;
 use std::error::Error as StdError;
@@ -36,7 +36,7 @@ impl Display for ErrorUnauthorized {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ValidatedCredentials {
     pub username: String,
-    pub display_name: Option<String>
+    pub display_name: Option<String>,
 }
 
 impl<'a> From<&'a User> for ValidatedCredentials {
@@ -61,7 +61,7 @@ impl FromData for ValidatedCredentials {
              Some(state) => state,
              None => return Outcome::Failure((Status::InternalServerError, ()))
          };
-         let user = match datalayer::get_user_from_request(&login_request, state.inner()) {
+         let user = match user_data_layer::get_user_from_request(state.inner(), &login_request ) {
              Ok(user) => user,
              _ => return Outcome::Failure((Status::Unauthorized, ()))
          };
@@ -74,6 +74,7 @@ impl FromData for ValidatedCredentials {
 pub fn login(app_state: State<AppState>, 
             mut cookies: Cookies, 
             login: ValidatedCredentials) -> Json<ValidatedCredentials> {
+    debug!("Logging in {}", login.username);
     let mut username_cookie = Cookie::new("beamed-username", login.username.clone());
     initialize_cookie(&mut username_cookie);
     cookies.add(username_cookie);
@@ -84,6 +85,26 @@ pub fn login(app_state: State<AppState>,
     }
     Json(login)
 }
+
+#[post("/register", data = "<user_info_json>")]
+pub fn register(app_state: State<AppState>,
+                mut cookies: Cookies,
+                user_info_json: Json<UserForm>) ->
+                Result<Json<ValidatedCredentials>, Status> {
+        let user_info : UserForm = user_info_json.into_inner();
+        debug!("Received register request for username: {}", user_info.username);
+        match user_data_layer::create_new_user(&app_state, &user_info) {
+            Ok(()) => {
+                info!("Successfully created user. Logging in...");
+                Ok(login(app_state, cookies, ValidatedCredentials{ username: user_info.username, display_name: user_info.display_name }))
+            },
+            Err(e) => {
+                error!("Error creating new user: {}", e);
+                Err(Status::BadRequest)
+            }
+        }
+
+    }
 
 fn initialize_cookie(cookie: &mut Cookie) {
     cookie.set_secure(true);
