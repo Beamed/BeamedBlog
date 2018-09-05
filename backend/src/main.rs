@@ -19,6 +19,8 @@ extern crate bcrypt;
 #[macro_use]
 extern crate rocket;
 extern crate rocket_contrib;
+extern crate chrono;
+
 use cookie::SameSite;
 use std::error::Error;
 

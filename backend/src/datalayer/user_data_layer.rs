@@ -1,10 +1,9 @@
 use ::app_state::AppState;
-use ::models::user::{User, UserForm};
+use ::models::user::{User, UserForm, LoginRequest};
 use std::error::Error;
 use bcrypt::{DEFAULT_COST, hash, verify};
 use std::fmt::{self, Display, Formatter};
 use diesel::types::Text;
-use models::login_request::LoginRequest;
 use diesel::dsl::*;
 use diesel::prelude::*;
 use diesel::insert_into;
@@ -38,6 +37,10 @@ pub fn get_user_from_request(state: &AppState, login_request: &LoginRequest) -> 
     } else {
         Err(UserDataError::AuthError)
     }
+}
+
+pub fn get_user_from_username(state: &AppState, req_username: &String) -> Result<User, UserDataError> {
+    get_user_by_username(state.get_connection().map_err(|err| UserDataError::DatabaseError(Box::from(err)))?, req_username)
 }
 
 pub fn create_new_user(state: &AppState, user: &UserForm) -> Result<(), UserDataError> {

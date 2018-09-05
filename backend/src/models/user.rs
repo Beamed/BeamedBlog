@@ -1,3 +1,13 @@
+pub const USERNAME_COOKIE : &'static str = "beamed-username";
+pub const DISPLAY_COOKIE : &'static str = "beamed-displayname";
+pub const AUTHOR_COOKIE : &'static str = "beamed-author";
+
+#[derive(FromForm)]
+pub struct LoginRequest{
+    pub username: String,
+    pub password: String,
+}
+
 table! {
     users (id) {
         id -> Int4,
@@ -29,3 +39,19 @@ pub struct User {
     pub author: bool,
 }
 
+#[derive(Serialize, Deserialize, Debug)]
+pub struct ValidatedCredentials {
+    pub username: String,
+    pub display_name: Option<String>,
+    pub author: bool,
+}
+
+impl<'a> From<&'a User> for ValidatedCredentials {
+    fn from(user: &'a User) -> ValidatedCredentials {
+        ValidatedCredentials {
+            username: user.username.clone(),
+            display_name: user.display_name.clone(),
+            author: user.author,
+        }
+    }
+}
